@@ -1,0 +1,114 @@
+# author: vishalpaudel
+
+from os.path import join, splitext
+from cv2 import (
+    VideoCapture,
+    cvtColor,
+    COLOR_BGR2RGB,
+    waitKey,
+    destroyAllWindows,
+    CAP_PROP_FPS,
+)
+from mediapipe import solutions
+from numpy import save, array
+
+from time import time
+
+from .config import vids_dir, vid_names, data_dir
+from .plot_landmarks import plot_landmark
+
+# Initialize MediaPipe Pose module
+pose_module = solutions.pose.Pose()
+
+
+def _extract_landmarks(frame, pose_module):
+    frame_rgb = cvtColor(frame, COLOR_BGR2RGB)
+    results = pose_module.process(frame_rgb)
+    landmarks = []
+
+    if results.pose_landmarks is not None:
+        landmarks = [
+            (landmark.x, landmark.y, landmark.z)
+            for landmark in results.pose_landmarks.landmark
+        ]
+
+    return landmarks
+
+
+def _process_video(video_path, pose_module):
+    mode = "not-camera"
+
+    video_capture = VideoCapture(video_path)
+
+    # We assume FPS to be 30
+    if round(video_capture.get(CAP_PROP_FPS)) != 30:
+        print(f"FPS was not 30 for {video_path}")
+
+    # Check if the video file is opened successfully
+    if not video_capture.isOpened():
+        print(f"Error opening video file {video_path}")
+
+    landmarks_data = []
+
+    if mode == "camera":
+        while video_capture.isOpened():
+            ret, frame = video_capture.read()
+
+            if not ret:
+                break
+
+            landmarks = _extract_landmarks(frame, pose_module)
+            landmarks_data.append(landmarks)
+
+            if waitKey(1) & 0xFF == ord("q"):
+                break
+
+        video_capture.release()
+        destroyAllWindows()
+
+    else:
+        while True:
+            ret, frame = video_capture.read()
+
+            if not ret:
+                break
+
+            landmarks = _extract_landmarks(frame, pose_module)
+            landmarks_data.append(landmarks)
+
+        video_capture.release()
+
+    return array(landmarks_data)
+
+
+def save_extracted_features():
+    global pose_module
+
+    print("\nStarted saving frame-landmarks!")
+    _start_time = time()
+
+    vids = vid_names[vid_names.index("shashank3.mov") :]
+
+    for vid_name in vids:
+        _local_time = time()
+
+        test_video = join(vids_dir, vid_name)
+        landmarks_array = _process_video(test_video, pose_module)
+        file_name, _ = splitext(vid_name)  # remove extension
+        save_file_name = join(
+            data_dir,
+            "extracted_landmarks",
+            f"{file_name}.npy",
+        )
+
+        # plot_landmark(landmarks_array[0])
+        save(save_file_name, landmarks_array)  # save landmarks data NumPy file
+
+        _end_time = time()
+        _elapsed_time = _end_time - _local_time
+        print("saved:", file_name, f"{_elapsed_time} sec", sep="\t")
+
+    _end_time = time()
+    _elapsed_time = _end_time - _start_time
+
+    print(f"Completed! Took {_elapsed_time} sec")
