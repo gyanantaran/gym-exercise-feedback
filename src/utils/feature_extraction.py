@@ -1,4 +1,6 @@
 # author: vishalpaudel
+# %% Imports
+
 
 from os.path import join, splitext
 from cv2 import (
@@ -14,11 +16,18 @@ from numpy import save, array
 
 from time import time
 
-from .config import vids_dir, vid_names, data_dir
+from path_manager import npy_location
+
+from .config import vids_dir, vid_names, landmarks_dir
 from .plot_landmarks import plot_landmark
 
-# Initialize MediaPipe Pose module
+
+# %% Initialize MediaPipe Pose module
+
 pose_module = solutions.pose.Pose()
+
+
+# %% Extract landmarks from frame
 
 
 def _extract_landmarks(frame, pose_module):
@@ -33,6 +42,9 @@ def _extract_landmarks(frame, pose_module):
         ]
 
     return landmarks
+
+
+# %% Process the whole video
 
 
 def _process_video(video_path, pose_module):
@@ -81,6 +93,7 @@ def _process_video(video_path, pose_module):
     return array(landmarks_data)
 
 
+# %% Save extracted features(the landamarks) into src.utils.config.landmarks_dir
 def save_extracted_features():
     global pose_module
 
@@ -94,19 +107,14 @@ def save_extracted_features():
 
         test_video = join(vids_dir, vid_name)
         landmarks_array = _process_video(test_video, pose_module)
-        file_name, _ = splitext(vid_name)  # remove extension
-        save_file_name = join(
-            data_dir,
-            "extracted_landmarks",
-            f"{file_name}.npy",
-        )
+        save_npy_path = npy_location(vid_name)
 
         # plot_landmark(landmarks_array[0])
-        save(save_file_name, landmarks_array)  # save landmarks data NumPy file
+        save(save_npy_path, landmarks_array)  # save landmarks data NumPy file
 
         _end_time = time()
         _elapsed_time = _end_time - _local_time
-        print("saved:", file_name, f"{_elapsed_time} sec", sep="\t")
+        print("saved:", vid_name, f"{_elapsed_time} sec", sep="\t")
 
     _end_time = time()
     _elapsed_time = _end_time - _start_time

@@ -2,6 +2,7 @@
 import numpy as np
 
 
+# %% Normalise a frame, TODO
 def normalise_frame(frames):
     print(frames.shape())
 
