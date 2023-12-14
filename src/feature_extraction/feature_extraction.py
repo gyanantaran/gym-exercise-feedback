@@ -1,8 +1,8 @@
-# author: vishalpaudel
+# author: @vishalpaudel
 # %% Imports
 
 
-from os.path import join, splitext
+from os.path import join
 from cv2 import (
     VideoCapture,
     cvtColor,
@@ -16,11 +16,9 @@ from numpy import save, array
 
 from time import time
 
-from path_manager import npy_location
+from src.utils.path_manager import npy_location
 
-from .config import vids_dir, vid_names, landmarks_dir
-from .plot_landmarks import plot_landmark
-
+from src.config import vids_dir, vid_names
 
 # %% Initialize MediaPipe Pose module
 

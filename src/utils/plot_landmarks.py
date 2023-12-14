@@ -2,23 +2,23 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
-def plot_landmark(frame):
+def plot_landmark(cur_frame):
     for landmark in range(0, 33):
-        landmark_test = frame[landmark][:2]
-        # plt.ylim(0, 1)
-        # plt.xlim(0.4, 0.6)
+        landmark_test = cur_frame[landmark][:2]
+        plt.ylim(-2, 2)
+        plt.xlim(-2, 2)
         plt.plot(landmark_test[0], landmark_test[1], "o")
 
 
-def plot_landmarks(frames, win_title):
+def plot_landmarks(all_frames, win_title):
     fig = plt.figure(f"Frames for {win_title}")
 
     def update(frame_index):
         plt.clf()
-        plot_landmark(frames[frame_index, :, :])
+        plot_landmark(all_frames[frame_index, :, :])
         plt.title(f"Frame Index {frame_index}")
 
-    num_frames = frames.shape[0]
+    num_frames = all_frames.shape[0]
     animation = FuncAnimation(fig, update, frames=num_frames, repeat=False)
     plt.show()
 
@@ -28,8 +28,8 @@ if __name__ == "__main__":
     from numpy.random import choice, randint
     from os.path import splitext, join
 
-    from config import vid_names, landmarks_dir
-    from normalise_frame import normalise_frame
+    from src.config import vid_names, landmarks_dir
+    from src.preprocessing.normalise import normalise_frames
 
     chosen_vid = splitext(choice(vid_names))[0]
     file_name = f"{chosen_vid}.npy"
@@ -39,6 +39,7 @@ if __name__ == "__main__":
     frame_index = randint(0, frames.shape[0])
     frame = frames[frame_index, :, :]
 
-    normalised_frame = normalise_frame(frame)
+    normalised_frames = normalise_frames(frames)
 
-    plot_landmarks(frames, chosen_vid)
+    # plot_landmarks(frames, chosen_vid)
+    plot_landmarks(normalised_frames, chosen_vid)

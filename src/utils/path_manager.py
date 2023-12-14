@@ -1,7 +1,7 @@
 # %% Imports
 
 from os.path import splitext, join
-from config import landmarks_dir
+from src.config import landmarks_dir
 
 
 # %% Split file name
@@ -20,3 +20,5 @@ def npy_location(vid_name):
     npy_path = join(landmarks_dir, npy_file_name)
 
     return npy_path
+
+# %% Save
