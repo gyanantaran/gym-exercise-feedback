@@ -16,9 +16,9 @@ from numpy import save, array
 
 from time import time
 
-from src.utils.path_manager import npy_location
+from src.paths.path_manager import npy_location
 
-from src.config import vids_dir, vid_names
+from src.paths.paths import vid_dir, vid_names
 
 # %% Initialize MediaPipe Pose module
 
@@ -91,7 +91,7 @@ def _process_video(video_path, pose_module):
     return array(landmarks_data)
 
 
-# %% Save extracted features(the landamarks) into src.utils.config.landmarks_dir
+# %% Save extracted features(the landmarks) into src.utils.config.landmarks_dir
 def save_extracted_features():
     global pose_module
 
@@ -103,7 +103,7 @@ def save_extracted_features():
     for vid_name in vids:
         _local_time = time()
 
-        test_video = join(vids_dir, vid_name)
+        test_video = join(vid_dir, vid_name)
         landmarks_array = _process_video(test_video, pose_module)
         save_npy_path = npy_location(vid_name)
 

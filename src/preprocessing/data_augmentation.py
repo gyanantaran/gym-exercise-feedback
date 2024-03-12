@@ -3,14 +3,13 @@
 # save the whole data into X.npy, and Y.npy
 
 from math import floor
-from os.path import join
 
 import numpy as np
-from numpy import load, arange, where, array, concatenate
+from numpy import load, arange, where
 from numpy.typing import NDArray
 
-from src.config import vid_names, landmarks_dir, train_test_dir, num_frames_per_new
-from src.utils.path_manager import npy_location
+from src.config import num_frames_per_new
+from src.paths.path_manager import npy_location
 
 
 # %% Create index array of frames to be seperated

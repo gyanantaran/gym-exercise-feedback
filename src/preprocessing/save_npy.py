@@ -2,7 +2,7 @@
 from numpy import save, array, isnan
 from os.path import join
 
-from src.config import train_test_dir, vid_names, labels_df
+from src.paths.paths import train_test_dir, vid_names, labels_df
 from src.preprocessing.data_augmentation import augment_frames
 
 
@@ -41,6 +41,7 @@ def save_X() -> None:
     save(y_save_loc, Y)
 
     return
+
 
 if __name__ == "__main__":
     save_X()
